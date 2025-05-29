@@ -24,9 +24,9 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
     - name: Prepare Release
-        id: prep
-        run: echo "RELEASE_TAG=$(date +'%Y-%m-%d-%H-%M-%S')" >> $GITHUB_ENV
-        shell: bash
+      id: prep
+      run: echo "RELEASE_TAG=$(date +'%Y-%m-%d-%H-%M-%S')" >> $GITHUB_ENV
+      shell: bash
 
     - name: Create Release
       id: create_release
