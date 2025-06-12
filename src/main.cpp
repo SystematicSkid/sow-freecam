@@ -210,14 +210,12 @@ private:
 public:
     void Run() {
 
-        uintptr_t game_module = (uintptr_t)GetModuleHandle(nullptr);
-
         if (!Initialize()) {
             Cleanup();
             return;
         }
 
-        
+        uintptr_t game_module = (uintptr_t)GetModuleHandle(nullptr);
         uintptr_t game_client_address = memory::sigscan("48 8B 0D ? ? ? ? E8 ? ? ? ? C7 47");
         printf("Found game client at 0x%p\n", game_client_address);
         /* Get rip relative value */
@@ -225,6 +223,7 @@ public:
         uintptr_t game_client_offset = game_client_address + 7 + rip_relative;
         printf("Game client offset: 0x%p\n", game_client_offset);
         sow::GameClient* game_client = *(sow::GameClient**)(game_client_offset);
+
         if (!game_client || !game_client->camera_owner || !game_client->camera_owner->gameplay_camera) {
             printf("Failed to get camera\n");
             Cleanup();
