@@ -4,6 +4,7 @@
 #include <map>
 #include <vector>
 #include <thread>
+#include <filesystem>
 
 #include <minhook/MinHook.h>
 
@@ -90,7 +91,6 @@ private:
 
         if (forward.length() > 0.0f) forward = forward.normalize();
         if (right.length() > 0.0f) right = right.normalize();
-
         
         if (GetAsyncKeyState('W') & 0x8000) movement += forward;
         if (GetAsyncKeyState('S') & 0x8000) movement -= forward;
@@ -136,6 +136,7 @@ private:
     {
         if( instance->camera_transform == transform )
         {
+            printf("Transform: %p\n", transform);
             return nullptr;
         }
         return reinterpret_cast<void*( __fastcall* )( void*, vec3* )>( instance->original_transform_callback )( transform, position );
@@ -200,7 +201,9 @@ private:
 
 public:
     void Run() {
-        
+
+        uintptr_t game_module = (uintptr_t)GetModuleHandle(nullptr);
+
         if (!Initialize()) {
             Cleanup();
             return;
@@ -222,6 +225,7 @@ public:
 
         
         while (!(GetAsyncKeyState(VK_END) & 0x8000)) {
+            game_client = *(sow::GameClient**)(game_client_offset);
             if (game_client->camera_owner->gameplay_camera->transform) {
                 UpdateCamera(game_client->camera_owner->gameplay_camera->transform);
             }
