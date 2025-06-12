@@ -188,6 +188,14 @@ private:
         return true;
     }
 
+    void ToggleHooks(bool enable) {
+        if (enable) {
+            MH_EnableHook(MH_ALL_HOOKS);
+        } else {
+            MH_DisableHook(MH_ALL_HOOKS);
+        }
+    }
+
     void Cleanup() {
         RestorePatches();
         if (game_window) {
@@ -223,11 +231,15 @@ public:
             return;
         }
 
-        
+        bool is_active = true;
         while (!(GetAsyncKeyState(VK_END) & 0x8000)) {
             game_client = *(sow::GameClient**)(game_client_offset);
-            if (game_client->camera_owner->gameplay_camera->transform) {
+            if (game_client->camera_owner->gameplay_camera->transform && is_active) {
                 UpdateCamera(game_client->camera_owner->gameplay_camera->transform);
+            }
+            if (GetAsyncKeyState(VK_F1) & 0x8000) {
+                is_active = !is_active;
+                ToggleHooks(is_active);
             }
             Sleep(16);
         }
